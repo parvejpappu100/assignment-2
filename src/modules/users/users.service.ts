@@ -5,6 +5,19 @@ const getAllUsers = async () => {
   return result;
 };
 
+const updateSingleUser = async (
+  payLoad: Record<string, unknown>,
+  id: string
+) => {
+  const { name, email, phone, role } = payLoad;
+  const result = await pool.query(
+    `UPDATE users SET name=$1, email=$2, phone=$3, role=$4 WHERE id=$5 RETURNING *`,
+    [name, email, phone, role, id]
+  );
+  return result;
+};
+
 export const userServices = {
   getAllUsers,
+  updateSingleUser,
 };
