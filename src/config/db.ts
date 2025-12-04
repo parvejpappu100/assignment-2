@@ -18,8 +18,22 @@ const initDB = async () => {
                 CONSTRAINT password_min_length CHECK (LENGTH(password) >= 6),
                 phone VARCHAR(20) NOT NULL,
                 role VARCHAR(20) NOT NULL
+                CHECK (role IN ('admin', 'customer'))
             )
         `);
+  await pool.query(`
+          CREATE TABLE IF NOT EXISTS vehicles(
+                id SERIAL PRIMARY KEY,
+                vehicle_name VARCHAR(100) NOT NULL,
+                type VARCHAR(20) NOT NULL 
+                CHECK (type IN ('car', 'bike', 'van', 'SUV')),
+                registration_number VARCHAR(15) NOT NULL UNIQUE,
+                daily_rent_price INT NOT NULL
+                CHECK (daily_rent_price > 0),
+                availability_status VARCHAR(20) NOT NULL
+                CHECK (availability_status IN ('available', 'booked'))
+          )
+          `);
 };
 
 export default initDB;
