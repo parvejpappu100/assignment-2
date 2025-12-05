@@ -1,6 +1,9 @@
 import { pool } from "../../config/db";
 
-const createBooking = async (playLoad: Record<string, unknown>, total_price: number) => {
+const createBooking = async (
+  playLoad: Record<string, unknown>,
+  total_price: number
+) => {
   const { customer_id, vehicle_id, rent_start_date, rent_end_date } = playLoad;
   const status = "active";
   const result = await pool.query(
@@ -17,6 +20,12 @@ const createBooking = async (playLoad: Record<string, unknown>, total_price: num
   return result;
 };
 
+const getAllBookings = async () => {
+  const result = await pool.query(`SELECT * FROM bookings`);
+  return result;
+};
+
 export const bookingServices = {
   createBooking,
+  getAllBookings,
 };
