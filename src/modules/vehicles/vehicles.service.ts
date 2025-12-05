@@ -48,9 +48,14 @@ const updateVehicle = async (payLoad: Record<string, unknown>, id: string) => {
       daily_rent_price,
       availability_status,
       registration_number,
-      id
+      id,
     ]
   );
+  return result;
+};
+
+const deleteVehicle = async (id: string) => {
+  const result = await pool.query(`DELETE FROM vehicles WHERE id=$1`, [id]);
   return result;
 };
 
@@ -59,4 +64,5 @@ export const vehicleServices = {
   getAllVehicles,
   getSingleVehicle,
   updateVehicle,
+  deleteVehicle,
 };
