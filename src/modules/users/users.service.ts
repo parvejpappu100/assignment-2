@@ -5,6 +5,11 @@ const getAllUsers = async () => {
   return result;
 };
 
+const getSingleUser = async (id: string) => {
+  const result = await pool.query(`SELECT * FROM users WHERE id=$1`, [id]);
+  return result;
+};
+
 const updateSingleUser = async (
   payLoad: Record<string, unknown>,
   id: string
@@ -26,4 +31,5 @@ export const userServices = {
   getAllUsers,
   updateSingleUser,
   deleteUser,
+  getSingleUser,
 };
