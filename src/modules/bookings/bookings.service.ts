@@ -20,9 +20,27 @@ const createBooking = async (
   return result;
 };
 
-const getAllBookings = async () => {
-  const result = await pool.query(`SELECT * FROM bookings`);
-  return result;
+const getAllBookings = async (payload: Record<string, any>) => {
+  const baseQuery = `
+    SELECT 
+      b.*,
+      v.vehicle_name,
+      v.type,
+      v.registration_number,
+      v.daily_rent_price
+    FROM bookings b
+    JOIN vehicles v ON b.vehicle_id = v.id
+  `;
+
+  if (payload.role === "admin") {
+    const result =  await pool.query(baseQuery);
+    return result;
+  } else {
+    const result =  await pool.query(baseQuery + " WHERE b.customer_id=$1", [
+      payload.id,
+    ]);
+    return result;
+  }
 };
 
 export const bookingServices = {

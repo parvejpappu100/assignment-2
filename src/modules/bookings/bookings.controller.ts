@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { bookingServices } from "./bookings.service";
 import { pool } from "../../config/db";
+import { JwtPayload } from "jsonwebtoken";
 
 const createBooking = async (req: Request, res: Response) => {
   try {
@@ -57,14 +58,31 @@ const createBooking = async (req: Request, res: Response) => {
 
 const getAllBookings = async (req: Request, res: Response) => {
   try {
-    const result = await bookingServices.getAllBookings();
+    const result = await bookingServices.getAllBookings(req.user as JwtPayload);
+    console.log(result.rows[0]);
+    const formatted = result.rows.map((row) => ({
+      id: row.id,
+      vehicle_id: row.vehicle_id,
+      rent_start_date: row.rent_start_date,
+      rent_end_date: row.rent_end_date,
+      total_price: row.total_price,
+      status: row.status,
+      vehicle: {
+        vehicle_name: row.vehicle_name,
+        registration_number: row.registration_number,
+        type: row.type,
+      },
+    }));
+
     res.status(200).json({
       success: true,
       message:
         result.rows.length === 0
           ? "No booking found"
-          : "Bookings retrieved successfully",
-      data: result.rows,
+          : req.user?.role === "customer"
+          ? "Your bookings retrieved successfully."
+          : "Bookings retrieved successfully.",
+      data: formatted,
     });
   } catch (error: any) {
     res.status(401).json({

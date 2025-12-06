@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { userServices } from "./users.service";
+import { JwtPayload } from "jsonwebtoken";
 
 const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -53,16 +54,16 @@ const getSingleUser = async (req: Request, res: Response) => {
 
 const updateSingleUser = async (req: Request, res: Response) => {
   const id = req.params.userId;
+  const currentUser = req.user as JwtPayload;
 
   try {
-    const result = await userServices.updateSingleUser(req.body, id as string);
+    const result = await userServices.updateSingleUser(
+      req.body,
+      id as string,
+      currentUser
+    );
 
-    const user = result.rows[0];
-    if (user) {
-      delete user.password;
-    }
-
-    if (result.rows.length === 0) {
+    if (!result || result.rows.length === 0) {
       res.status(404).json({
         success: false,
         message: "User not found",
@@ -71,7 +72,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
       res.status(200).json({
         success: true,
         message: "User updated successfully",
-        data: user,
+        data: result.rows[0],
       });
     }
   } catch (error: any) {
