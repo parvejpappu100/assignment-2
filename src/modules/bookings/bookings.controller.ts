@@ -127,7 +127,15 @@ const updateBookingStatus = async (req: Request, res: Response) => {
             ? "Booking cancelled successfully."
             : "Booking marked as returned. Vehicle is now available.",
         data:
-          user.role === "admin" ? result.result.rows[0] : result.result.rows[0],
+          user.role === "admin"
+            ? {
+                ...result.result.rows[0],
+                vehicle: {
+                  availability_status:
+                    result.updateStatus.rows[0].availability_status,
+                },
+              }
+            : result.result.rows[0],
       });
     }
   } catch (error: any) {
