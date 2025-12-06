@@ -44,8 +44,6 @@ const loginUser = async (email: string, password: string) => {
     expiresIn: "7d",
   });
   delete user.password;
-  console.log({ token });
-  console.log({ user });
   return { token, user };
 };
 

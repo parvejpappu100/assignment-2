@@ -58,6 +58,8 @@ const createBooking = async (req: Request, res: Response) => {
 
 const getAllBookings = async (req: Request, res: Response) => {
   try {
+    await bookingServices.returnStatusAuto();
+
     const result = await bookingServices.getAllBookings(req.user as JwtPayload);
     const isAdmin = req.user?.role === "admin";
 

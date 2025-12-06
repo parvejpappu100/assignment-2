@@ -20,6 +20,29 @@ const createBooking = async (
   return result;
 };
 
+const returnStatusAuto = async () => {
+  const now = new Date();
+  const expiredBookings = await pool.query(
+    `SELECT * FROM bookings 
+     WHERE status='active' AND rent_end_date < $1`,
+    [now]
+  );
+
+  if (expiredBookings.rows.length === 0) return;
+
+  for (const booking of expiredBookings.rows) {
+    await pool.query(
+      `UPDATE bookings SET status='returned' WHERE id=$1`,
+      [booking.id]
+    );
+    await pool.query(
+      `UPDATE vehicles SET availability_status='available' WHERE id=$1`,
+      [booking.vehicle_id]
+    );
+  }
+};
+
+
 const getAllBookings = async (payload: Record<string, any>) => {
   const baseQuery = `
     SELECT 
@@ -94,4 +117,5 @@ export const bookingServices = {
   createBooking,
   getAllBookings,
   updateBookingStatus,
+  returnStatusAuto,
 };

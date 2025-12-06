@@ -5,13 +5,17 @@ import config from "../config";
 const auth = (...roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers.authorization;
-      console.log({ authToken: token });
+      let token = req.headers.authorization;
       if (!token) {
-        return res.status(500).json({ message: "You are not allowed!" });
+        return res.status(401).json({ message: "You are not allowed!" });
       }
+
+      if (token.startsWith("Bearer ")) {
+        token = token.split(" ")[1];
+      }
+
       const decoded = jwt.verify(
-        token,
+        token!,
         config.jwt_secret as string
       ) as JwtPayload;
       req.user = decoded;
