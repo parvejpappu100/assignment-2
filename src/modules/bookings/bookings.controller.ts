@@ -59,20 +59,29 @@ const createBooking = async (req: Request, res: Response) => {
 const getAllBookings = async (req: Request, res: Response) => {
   try {
     const result = await bookingServices.getAllBookings(req.user as JwtPayload);
-    console.log(result.rows[0]);
-    const formatted = result.rows.map((row) => ({
-      id: row.id,
-      vehicle_id: row.vehicle_id,
-      rent_start_date: row.rent_start_date,
-      rent_end_date: row.rent_end_date,
-      total_price: row.total_price,
-      status: row.status,
-      vehicle: {
-        vehicle_name: row.vehicle_name,
-        registration_number: row.registration_number,
-        type: row.type,
-      },
-    }));
+    const isAdmin = req.user?.role === "admin";
+
+    const formatted = result.rows.map((row) => {
+      return {
+        id: row.id,
+        customer_id: row.customer_id,
+        vehicle_id: row.vehicle_id,
+        rent_start_date: row.rent_start_date,
+        rent_end_date: row.rent_end_date,
+        total_price: row.total_price,
+        status: row.status,
+        ...(isAdmin && {
+          customer: {
+            name: row.customer_name,
+            email: row.customer_email,
+          },
+        }),
+        vehicle: {
+          vehicle_name: row.vehicle_name,
+          registration_number: row.registration_number,
+        },
+      };
+    });
 
     res.status(200).json({
       success: true,
@@ -92,7 +101,45 @@ const getAllBookings = async (req: Request, res: Response) => {
   }
 };
 
+const updateBookingStatus = async (req: Request, res: Response) => {
+  const id = req.params.bookingId;
+  const user = req.user as JwtPayload;
+  const status = req.body.status;
+  try {
+    const result = await bookingServices.updateBookingStatus(
+      id as string,
+      status,
+      user
+    );
+
+    if (!result || result.result.rows.length === 0) {
+      res.status(404).json({
+        success: false,
+        message: "Booking not found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message:
+          result.result.rows.length === 0
+            ? "No booking found"
+            : req.user?.role === "customer"
+            ? "Booking cancelled successfully."
+            : "Booking marked as returned. Vehicle is now available.",
+        data:
+          user.role === "admin" ? result.result.rows[0] : result.result.rows[0],
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const bookingControllers = {
   createBooking,
   getAllBookings,
+  updateBookingStatus,
 };

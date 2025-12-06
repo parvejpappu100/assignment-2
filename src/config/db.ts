@@ -39,7 +39,8 @@ const initDB = async () => {
                 id SERIAL PRIMARY KEY,
                 customer_id INT REFERENCES users(id) ON DELETE CASCADE,
                 vehicle_id INT REFERENCES vehicles(id) ON DELETE CASCADE,
-                rent_start_date DATE NOT NULL,
+                rent_start_date DATE NOT NULL
+                CHECK (rent_start_date >= CURRENT_DATE + INTERVAL '1 day'),
                 rent_end_date DATE NOT NULL
                 CHECK (rent_end_date > rent_start_date),
                 total_price INT NOT NULL
