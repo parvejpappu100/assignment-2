@@ -1,117 +1,102 @@
-Vehicle Rental System (Backend)
+# 🚗 Vehicle Rental System Backend
 
-A backend API for managing vehicle rentals, users, bookings, authentication, and admin operations.
+**Live URL:** [https://assignment-2-gamma-one.vercel.app](https://assignment-2-gamma-one.vercel.app)
 
-🔗 Live URL:
-https://assignment-2-gamma-one.vercel.app
+---
 
-🚀 Features
-🔐 Authentication
+## 🎯 Project Overview
 
-User registration & login
+The **Vehicle Rental System** is a backend API built with Node.js and TypeScript for managing a vehicle rental business. The system provides:
 
-JWT-based authentication
+- Vehicle inventory management with availability tracking
+- Customer account management
+- Booking creation, cancellation, and return processing
+- Secure authentication with role-based access (Admin and Customer)
+- Automatic rental cost calculation and vehicle status updates
 
-Encrypted passwords with bcrypt
+The API is fully RESTful and follows modular, feature-based architecture for maintainability.
 
-Role-based access (Admin & Customer)
+---
 
-🧑‍💼 User Management
+## 🛠️ Features
 
-Register users
+### **Authentication & Authorization**
+- User signup and login with JWT authentication
+- Password hashing using bcrypt
+- Role-based access:
+  - **Admin:** Manage vehicles, users, and all bookings
+  - **Customer:** Manage own profile and bookings
 
-Login users
+### **Vehicles**
+- Add, update, delete, and retrieve vehicles (Admin-only for management)
+- Track availability (`available` or `booked`)
+- Retrieve specific vehicle details
 
-Access protected routes based on roles
+### **Users**
+- Admin can view, update, and delete users
+- Customers can update their own profiles
+- Deletion constraints prevent removing users with active bookings
 
-🚘 Vehicle Management
+### **Bookings**
+- Customers can create bookings; system calculates total price automatically
+- Admins can mark bookings as returned
+- Automatic vehicle availability updates for cancelled or returned bookings
+- Role-based booking retrieval (Admin sees all, Customer sees own)
 
-Add, update, delete vehicles (Admin)
+---
 
-Add vehicle details (type, price, availability)
+## 💻 Technology Stack
 
-📅 Booking Management
+- **Backend:** Node.js + TypeScript + Express.js
+- **Database:** PostgreSQL
+- **Authentication:** JWT + bcrypt
+- **Deployment:** Vercel
 
-Create booking (Customer & Admin)
+---
 
-Retrieve all bookings (Admin)
+## 📁 Code Structure
 
-Retrieve own bookings (Customer)
+The codebase follows a modular, feature-based architecture:
 
-Update booking status
 
-Total price calculation
+- Modular design with routes, controllers, and services.
+- Strict TypeScript typing for safety and maintainability.
 
-🛡 Protected Endpoints
+---
 
-All sensitive routes require:
+## ⚡ Setup & Usage
 
-Authorization: Bearer <token>
+### **Prerequisites**
+- Node.js >= 18.x
+- PostgreSQL database
+- npm or yarn
 
-🛠 Technology Stack
-Category	Technology
-Runtime	Node.js + TypeScript
-Framework	Express.js
-Database	PostgreSQL
-Auth	jsonwebtoken (JWT)
-Security	bcrypt
-Deployment	Vercel
-📦 Installation & Setup
-1. Clone the repository
-git clone <your_repo_url>
-cd vehicle-rental-system-backend
+### **Installation**
 
-2. Install dependencies
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd assignment-2
+
+Install dependencies:
+
 npm install
 
-3. Create environment variables
 
-Create a .env file in the root directory:
+Configure environment variables:
 
-DATABASE_URL=your_postgres_connection_string
-JWT_SECRET=your_secret_key
+cp .env.example .env
+# Fill in your DB connection and JWT secret, e.g.
 PORT=5000
+CONNECTION_STR=postgresql://<username>:<password>@<host>/<db>?sslmode=require
+JWT_SECRET="your_jwt_secret"
 
-4. Run database migrations (if any)
 
-If you're using SQL scripts:
+Start the development server:
 
-npm run migrate
-
-5. Start the server
-Development Mode:
 npm run dev
 
-Production Mode:
-npm run build
-npm start
 
-🔗 API Usage
-Authentication Header
+The API will run on:
 
-For all protected routes, send:
-
-Authorization: Bearer <token>
-
-Login to receive token
-POST /auth/login
-
-
-Returns:
-
-{
-  "token": "your_jwt_token",
-  "user": { ... }
-}
-
-🧩 Project Structure
-src/
-│── config/
-│── modules/
-│   ├── auth/
-│   ├── users/
-│   ├── vehicles/
-│   ├── bookings/
-│── middleware/
-│── app.ts
-│── server.ts
+http://localhost:5000
